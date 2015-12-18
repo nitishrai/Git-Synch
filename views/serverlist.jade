@@ -1,0 +1,22 @@
+html(lang="en")
+    head
+        title Server Listing
+        include head.jade
+    include body.jade
+        div(class="container")
+            div(class="col-md-6 col-md-offset-2")
+                div(class="row" style="padding: 40px")
+                    div(class="panel panel-default")
+                        div(class="panel-heading")
+                            h2(class="panel-title")
+                                strong SERVER LIST
+                        div(class="panel-body")
+                            div(class="list-group")
+                                if server.length > 0
+                                    each serverdata, i in server
+                                        li
+                                            a(href="/serverview/#{serverdata._id}",class="list-group-item",style="width:450px")= serverdata.server_identifier_name
+                                else
+                                    | No Server Exist &nbsp;
+                                    <br>
+                                    a(href="/newserver") Click To Add Server

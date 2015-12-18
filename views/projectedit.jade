@@ -1,0 +1,44 @@
+html(lang="en")
+    head
+        title Branch Add
+        include head.jade
+        script.
+            $(document).ready(function(){
+                $("#unique_identifier").validate({
+                        expression: "if (VAL.match(/^[a-z0-9\_]{3,30}$/)) return true; else return false;",message: "Please Enter Valid Identifier"
+                });
+                $("#web_url").validate({
+                       expression: "if (validator.isURL(VAL) || VAL=='') return true; else return false;",message: "Please Enter Valid URL"
+                });
+                $("#email").validate({
+                    expression: "if (validator.isEmail(VAL)) return true; else return false;",message: "Please Enter Valid Email"
+                });
+            });
+    include body.jade
+        div(class="container")
+            div(class="col-md-6 col-md-offset-2")
+                div(class="row" style="padding: 40px")
+                    div(class="panel panel-default")
+                        div(class="panel-heading")
+                            h2(class="panel-title")
+                                strong(align="center") PROJECT INFORMATION EDIT
+                        div(class="panel-body")
+                            div(class="list-group")
+                                each projectdata , i in project
+                                    form#formAddbranch(name="addbranch",method="post",action="/updateproject")
+                                        input(type="hidden",name="project_id",value="#{projectdata._id}", id="project_id")
+                                        div(class="form-group")
+                                            label(for="branchname") Unique Identifier
+                                            div(for="input-group")
+                                                input(type="text", placeholder="Unique Identify Project", name="unique_identifier",id="unique_identifier" value="#{projectdata.unique_identifier}" class="form-control" style="width:450px") 
+                                        div(class="form-group")
+                                            label(for="friendlyservername") Web Url(http)
+                                            div(class="input-group")
+                                                input(type="text", placeholder="Web Url Address", name="web_url",id="web_url" class="form-control" style="width:450px" value="#{projectdata.web_url}")
+                                        div(class="form-group")
+                                            label(for="pathonserver") Manager Email
+                                            div(class="input-group")
+                                            input(type="text", placeholder="Manager Email", name="email",id="email" class="form-control" style="width:450px" value="#{projectdata.email}" ) 
+                                        div(class="form-group")
+                                            div(class="input-group")
+                                                button(type="submit",id="submitbtn" class="btn btn-large btn-primary") Submit

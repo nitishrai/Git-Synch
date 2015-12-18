@@ -1,0 +1,34 @@
+html(lang="en")
+    head
+      title Branch Details
+      include head.jade
+      script.
+        $(document).ready(function()
+        {
+            var project_id = $("#project_id").val();
+            //alert(project_id);
+            $.get('/branchfetch',{project_id : project_id},function(data)
+            {
+                var content = '<table class="table table-hover" style="width:800px" align="center"><tr><th> Branch Name</th><th>Friendly Server Name</th><th>Web URL</th><th colspan=2>Action</th></tr>';
+                if(data.length>0)
+                {
+                    $.each(data,function(key,value)
+                    {
+                        //var prompt1 = 'onclick="return confirm('Are you sure u want to delete the data')"';
+                        content += '<tr><td>'+ value.branchname + '</td><td>'+ value.friendlyservername + '</td><td>'+ value.web_url + '</td><td><a href="/branchedit/' +value.branch_id + '">Edit</a></td><td><a href="/branchdelete/' +value.branch_id +'" onclick="return confirm(\'Are you sure u want to delete the data\');" >Delete</a></td></tr>';
+                    });
+                }
+                else
+                {
+                    content+='<tr><td colspan="5" align="center">No Branch Data Found</td></tr>';  
+                }
+                content+='</table>';
+                $("#here_table").append(content);
+            });
+        });
+    include body.jade
+        input(type="hidden", value="#{project_id}", name="project_id", id="project_id")
+        div(class="container")
+            div(class="col-md-8")
+                div(class="row" style="padding:125px;" align="center")
+                    div(id="here_table" class="col-md-12")

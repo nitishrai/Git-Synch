@@ -1,0 +1,25 @@
+html(lang="en")
+    head
+        title Project Listing
+        include head.jade
+        script.
+         $( document ).ready(function(){
+         $("#page-show").hide();
+         });
+    include body.jade
+        div(class="container")
+            div(class="col-md-6 col-md-offset-2")
+                div(class="row" style="padding: 40px")
+                    div(class="panel panel-default")
+                        div(class="panel-heading")
+                            h2(class="panel-title")
+                                strong(align="center") PROJECT LIST
+                        div(class="panel-body")
+                            div(class="list-group")
+                                if projects.length > 0
+                                    each project, i in projects
+                                        li
+                                            a(href="/projectinfo/#{project._id}",class="list-group-item", style="width:450px")= project.unique_identifier
+                                 else
+                                    | No Project Exist Please &nbsp;
+                                    a(href="/newproject") Add Project

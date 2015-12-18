@@ -1,0 +1,109 @@
+html(lang="en")
+ head
+  include head.jade
+  title Add New Sever
+  script.
+   $( document ).ready(function()
+    {
+     $("#page-show").hide();
+     $("#skey").hide();
+     $("#spassword").hide();
+     $("#unique_identifier").validate({
+       expression: "if (VAL.match(/^[a-z0-9\_]{3,30}$/)) return true; else return false;",message: "Please Enter Valid Identifier"
+     });
+     $("#hostip").validate({
+       expression: "if (validator.isIP(VAL) || validator.isURL(VAL)) return true; else return false;",message: "Please Enter Valid IP Address or Domain"
+     });
+     $("#portno").validate({
+       expression: "if (validator.isNumeric(VAL)) return true; else return false;",message: "Please Enter Valid Port No"
+     });
+     $("#username").validate({
+       expression: "if (VAL.match(/^[a-zA-Z0-9\_]{3,30}$/)) return true; else return false;",message: "Please Enter Valid username"
+     });
+     $("#authmethod").validate({
+       expression: "if (VAL!='') return true; else return false;",message: "Please Select A Value"
+     });
+     $('#unique_identifier').on('keyup',function()
+     {
+       unique_identifier = $('#unique_identifier').val();
+       $.get("/serverunique",{unique_identifier : unique_identifier },function(data){
+         $('#message').val(data.isavailable);
+          $('#submitbtn').on('click',function()
+         {
+           if(data.isavailable)
+           {
+            $('#formAddServer').submit();
+           }
+         });
+        });
+     });
+     $('#authmethod').on('change',function()
+     {
+       var authmethod = $('#authmethod').val();
+       if(authmethod == 1)
+       {
+        $("#skey").show();
+        $("#spassword").hide();
+        $("#password").value = '';
+       }
+       else
+       {
+        $("#spassword").show();
+        $("#skey").hide();
+        $("#key").value = '';
+       }
+       if(authmethod=="")
+       {
+        $("#spassword").hide();
+        $("#skey").hide();
+        $("#key").value = '';
+        $("#password").value = '';
+       }
+     });
+    });
+ include body.jade
+  div(class="container")
+   div(class="col-md-6 col-md-offset-2") 
+    div(class="row" style="padding: 40px")
+       div(class="panel panel-default")
+        div(class="panel-heading")
+         h2(class="panel-title")
+          strong(align="center") ADD NEW SERVER
+        div(class="panel-body")
+         form#formAddServer(name="addserver",method="post",action="/addserver",class="form-signin")
+          div(class="form-group") 
+           label(for='unique_identifier') Server identifier Name
+           div(class="input-group")
+            input(type="text", placeholder="Server identifier Name", name="unique_identifier",id="unique_identifier",class="form-control",style="width:450px") 
+            input(type="label", placeholder="true if name is available", name="message",id="message",class="form-control",readonly,style="width:450px")
+            span.emsg.hidden Please Enter a valid Identifier
+          div(class="form-group")
+           label(for='hostip') Host
+           div(class="input-group")
+            input(type="text", placeholder="IP Address or Domain Name", name="hostip",id="hostip",class="form-control",style="width:450px")
+          div(class="form-group")
+           label(for="portno") Port
+           div(class="input-group")
+            input(type="text", placeholder="port number", name="portno",id="portno",class="form-control",style="width:450px")
+          div(class="form-group")
+           label(for="username") Username
+           div(class="input-group")
+            input(type="text", placeholder="username", name="username",id="username",class="form-control",style="width:450px")
+          div(class="form-group")
+           label(for="authmethod") Auth Method (Key/Password) 
+           div(class="input-group")
+            select(name="authmethod",id="authmethod",class="form-control",style="width:450px")
+             option(value ="") Choose Authentication Method
+             option(value = 1) Key
+             option(value = 2) Password
+          div(class="form-group" id="skey")
+           label(for="key") Server Key
+           div(class="input-group")
+            input(type="text",placeholder="Key File",name="key",id="key",class="form-control",style="width:450px")
+          div(class="form-group" id="spassword")
+           label(for="password")  Password
+           div(class="input-group")
+            input(type="password",name="password",id="password",class="form-control",style="width:450px")
+          div(class="form-group")
+           div(class="input-group")
+            button(type="button",id="submitbtn",class="btn btn-large btn-primary") Submit

@@ -1,0 +1,83 @@
+html(lang="en")
+      head
+            include head.jade
+            script.
+                  $( document ).ready(function()
+                  {
+                        $("#server_identifier_name").validate({
+                              expression: "if (VAL.match(/^[a-z0-9\_]{3,30}$/)) return true; else return false;",message: "Please Enter Valid Identifier"
+                        });
+                        $("#hostip").validate({
+                              expression: "if (validator.isIP(VAL)) return true; else return false;",message: "Please Enter Valid Host IP"
+                        });
+                        $("#portno").validate({
+                              expression: "if (validator.isNumeric(VAL)) return true; else return false;",message: "Please Enter Valid Port No"
+                        });
+                        $("#username").validate({
+                              expression: "if (VAL.match(/^[a-zA-Z0-9\_]{3,30}$/)) return true; else return false;",message: "Please Enter Valid username"
+                        });
+                        $("#authmethod").validate({
+                              expression: "if (VAL!='') return true; else return false;",message: "Please Select A Value"
+                        });
+                        $("#auth_value").validate({
+                              expression: "if (VAL!='') return true; else return false;",message: "Please Enter the Authentication Value  "
+                        });
+                        $('#server_identifier_name').on('keyup',function()
+                        {
+                              unique_identifier = $('#server_identifier_name').val();
+                              $.get("http://localhost:3000/serverunique",{unique_identifier : unique_identifier },function(data)
+                              {
+                                    $('#message').val(data.isavailable);
+                                    $('#submitbtn').on('click',function()
+                                    {
+                                          if(data.isavailable)
+                                          {
+                                               $('#formAddServer').submit();
+                                          }
+                                    });
+                              });
+                        });
+                  });
+            title Server Details
+      include body.jade  
+          div(class="container")
+            div(class="col-md-6 col-md-offset-2") 
+                  div(class="row" style="padding: 40px")
+                        div(class="panel panel-default")
+                              div(class="panel-heading")
+                                    h2(class="panel-title")
+                                          strong(align="center") SERVER EDIT
+                              div(class="panel-body")
+                                    each server , i in serverdata
+                                          form#formAddbranch(name="addbranch",method="post",action="/updateserver")
+                                                input(type="hidden",name="server_id",value="#{server._id}", id="server_id")
+                                                div(class="form-group")
+                                                      label(for="server_identifier_name") Server Identifier Name
+                                                      div(class="input-group")
+                                                            input(type="text", placeholder="Server Identifier Name", name="server_identifier_name",id="server_identifier_name",value="#{server.server_identifier_name}",class="form-control",style="width:450px") 
+                                                            input(type="text", placeholder="true if name is available", name="message",id="message",class="form-control",style="width:450px")
+                                                div(class="form-group")
+                                                      label(for="host") Host
+                                                      div(class="input-group")
+                                                            input(type="text", placeholder="Host",class="form-control" ,name="hostip",id="hostip",value="#{server.host}",style="width:450px") 
+                                                div(class="form-group")
+                                                      label(for="portno") Port
+                                                      div(class="input-group") 
+                                                            input(type="text", placeholder="Port", name="portno",id="portno",value="#{server.port}",class="form-control",style="width:450px")
+                                                div(class="form-group")
+                                                      label(for="username") Username
+                                                      div(class="input-group")
+                                                            input(type="text", placeholder="User Name",class="form-control", name="username",id="username",value="#{server.username}",style="width:450px") 
+                                                div(class="form-group")
+                                                      label(for="authmethod") Auth Method (Key/Password) 
+                                                      div(class="input-group")
+                                                            select(name="authmethod",id="authmethod",class="form-control",style="width:450px")
+                                                                  option(value = "") Choose Authentication Method
+                                                                  option(value = 1 selected='key'==server.auth_method) Key
+                                                                  option(value = 2 selected='password'==server.auth_method) Password
+                                                div(class="form-group")
+                                                      label(for="auth_value") Auth Value
+                                                            input(type="text", placeholder="Auth Value",class="form-control", name="auth_value",id="auth_value",value="#{server.auth_value}",style="width:450px") 
+                                                div(class="form-group")
+                                                      div(class="input-group")
+                                                            button(type="submit",id="submitbtn",class="btn btn-large btn-primary") Submit

@@ -1,0 +1,51 @@
+html(lang="en")
+head
+  title Branch Edit
+  include left-menu.jade
+  script.
+body
+     div(class="container")
+            div(class="col-md-6 col-md-offset-3") 
+                  div(class="row" style="padding: 40px")
+                        div(class="panel panel-default")
+                              div(class="panel-heading")
+                                    h2(class="panel-title")
+                                    strong(align="center") BRANCH EDIT
+                              div(class="panel-body")
+                                each branchd , i in branchdata
+                                       form#formAddbranch(name="addbranch",method="post",action="/updatebranch")
+                                        input(type="hidden",name="project_id",value="#{branchd._id}", id="project_id")
+                                        input(type="hidden",name="branch_id",value="#{branchd.branches.branch_id}", id="branch_id")   
+                                        div(class="form-group")
+                                            label(for="branchname") Branch Name
+                                            div(class="input-group")
+                                                input(type="text", placeholder="Branch Name", name="branchname",id="branchname",value="#{branchd.branches.branchname}" class="form-control" style="width:450px") 
+                                        div(class="form-group")
+                                            label(for="pathonserver") Path on server
+                                            div(class="input-group")
+                                                input(type="text", placeholder="Path on server", name="pathonserver",id="pathonserver",value="#{branchd.branches.pathonserver}" class="form-control" style="width:450px") 
+                                        div(class="form-group")
+                                            label(for="friendlyservername") Friendly Server Name
+                                            div(class="input-group")
+                                                input(type="text", placeholder="Friendly Server Name", name="friendlyservername",id="friendlyservername",value="#{branchd.branches.friendlyservername}" class="form-control" style="width:450px")
+                                        div(class="form-group")
+                                            label(for="email") Web Url Address (Optional)
+                                            div(class="input-group")
+                                                input(type="text", placeholder="Web Url Address", name="web_url",id="web_url",class="form-control",value="#{branchd.branches.web_url}",style="width:450px")
+                                        div(class="form-group")
+                                            label(for ="servername") Server Name
+                                            div(class="input-group")
+                                                    each sern , i in servern
+                                                        label( for="server_name" value=sern.server_identifier_name class="form-control" style="width:450px") #{sern.server_identifier_name}
+                                        div(class="form-group" id="server_form")
+                                            label(for ="servername") Select Server
+                                            div(class="input-group")
+                                                select(name="servername",id="servername" class="form-control" style="width:450px")
+                                                    each ser , i in server
+                                                        if ser._id.toString()==branchd.branches.servername.toString()
+                                                            option(value=ser._id, selected = "selected",class="form-control" style="width:450px") #{ser.server_identifier_name}
+                                                        else
+                                                            option(value=ser._id, class="form-control" style="width:450px") #{ser.server_identifier_name} 
+                                        div(class="form-group")
+                                            div(class="input-group")
+                                                button(type="submit",id="submitbtn" class="btn btn-large btn-primary") Submit

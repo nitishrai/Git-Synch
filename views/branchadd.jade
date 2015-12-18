@@ -1,0 +1,64 @@
+html(lang="en")
+  head
+    title Branch Add
+    include head.jade
+    script.
+      $(document).ready(function(){
+        $("#branchname").validate({
+          expression: "if (VAL.match(/^[a-z0-9\_]{3,30}$/)) return true; else return false;",message: "Please Enter Branch Name"
+        });
+        $("#pathonserver").validate({
+            expression: "if (VAL.match(/^[a-z0-9\/]{3,60}$/)) return true; else return false;",message: "Please Enter Valid Path"
+        });
+        $("#friendlyservername").validate({
+            expression: "if (VAL.match(/^[a-z0-9\_]{3,30}$/)) return true; else return false;",message: "Please Enter Valid ServerName"
+        });
+        $("#servername").validate({
+            expression: "if (VAL!='') return true; else return false;",message: "Please Select A Server"
+        });
+        $("#web_url").validate({
+          expression: "if (validator.isURL(VAL) || VAL=='') return true; else return false;",message: "Please Enter Valid URL"
+        });
+      });
+  include body.jade
+      div(class="container")
+          div(class="col-md-6 col-md-offset-2")
+              div(class="row" style="padding: 40px")
+                  div(class="panel panel-default")
+                      div(class="panel-heading")
+                          h2(class="panel-title")
+                              strong(align="center") BRANCH ADD
+                      div(class="panel-body")
+                          div(class="list-group")
+                            form#formAddbranch(name="addbranch",method="post",action="/addbranch" onsubmit="return validateform();")
+                                input(type="hidden",name="project_id",value="#{project_id}", id="project_id")
+                                div(class="form-group")
+                                 label(for="branchname") Branch Name
+                                 div(for="input-group")
+                                  input(type="text", placeholder="Branch Name", name="branchname",id="branchname" value="" class="form-control" style="width:450px") 
+                                div(class="form-group")
+                                 label(for="pathonserver") Path on server
+                                 div(class="input-group")
+                                  input(type="text", placeholder="Path on server", name="pathonserver",id="pathonserver" class="form-control" style="width:450px" ) 
+                                div(class="form-group")
+                                  label(for="email") Web Url Address (Optional)
+                                  div(class="input-group")
+                                    input(type="text", placeholder="Web Url Address", name="web_url",id="web_url",class="form-control",style="width:450px")
+                                div(class="form-group")
+                                 label(for="friendlyservername") Friendly Server Name
+                                 div(class="input-group")
+                                  input(type="text", placeholder="Friendly Server Name", name="friendlyservername",id="friendlyservername" class="form-control" style="width:450px")
+                                div(class="form-group")
+                                 label(for="servername") Select Server
+                                 div(class="input-group")
+                                  select(name="servername",id="servername" class="form-control" style="width:450px")
+                                   option(value="" class="form-control" style="width:450px") ---Select---
+                                   each ser , i in server
+                                    option(value=ser._id class="form-control" style="width:450px") #{ser.server_identifier_name}
+                                div(align="center")
+                                 label(for="newserver") OR    
+                                 div(class="input-group")
+                                  a(href="/newserver" , id="newserver") Add a New Server
+                                div(class="form-group")
+                                 div(class="input-group")
+                                  button(type="submit",id="submitbtn" class="btn btn-large btn-primary") Submit

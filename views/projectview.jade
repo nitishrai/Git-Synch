@@ -1,0 +1,73 @@
+html(lang="en")
+head
+  include left-menu.jade
+  script.
+   $(document).ready(function(){
+    $('#page-show').hide();
+    var project_id = $("#project_id").val();
+    //alert(project_id);
+    $.get('http://localhost:3000/branchfetch',{project_id : project_id},function(data)
+    {
+      var content = '<table class="table table-hover" style="width:450px"><tr><th> Branch Name</th><th> Path On Server</th><th>Friendly Server Name</th><th>Server Name</th><th colspan=2>Action</th></tr>';
+      $.each(data,function(key,value)
+      {
+       //var prompt1 = 'onclick="return confirm('Are you sure u want to delete the data')"';
+       content += '<tr><td>'+ value.branchname + '</td><td>'+ value.pathonserver + '</td><td>'+ value.friendlyservername + '</td><td>'+ value.servername + '</td><td><a href="/branchedit/' +value.branch_id + '">Edit</a></td><td><a href="/branchdelete/' +value.branch_id +'" >Delete</a></td></tr>';
+      });
+      content+='</table>';
+      $("#here_table").append(content);
+      //alert(data.branchname);
+    });
+   });
+  script.
+   function validateform()
+   {
+    var branchname1=document.forms['addbranch']['branchname'].value;
+    var pathonserver1=document.forms['addbranch']['pathonserver'].value;
+    if(branchname1=="" || branchname1==NULL)
+    {
+     alert("Please enter branchname");
+     return false;
+    }
+    else if(pathonserver1=="" || pathonserver1==NULL)
+    {
+     alert("Please enter pathonserver")
+     return false;
+    }
+   }
+body
+    div(class="container")
+        div(class="col-md-6 col-md-offset-3")
+            div(class="row" style="padding: 40px")
+                div(class="panel panel-default")
+                    div(class="panel-heading")
+                        h2(class="panel-title")
+                            strong(align="center") Branch Add
+                    div(class="panel-body")
+                        div(class="list-group")
+                          form#formAddbranch(name="addbranch",method="post",action="/addbranch" onclick="return validateform();")
+                              input(type="hidden",name="project_id",value="#{project_id}", id="project_id")
+                              div(class="form-group")
+                               label(for="branchname") Branch Name
+                               div(for="input-group")
+                                input(type="text", placeholder="Branch Name", name="branchname",id="branchname" value="" class="form-control" style="width:450px") 
+                              div(class="form-group")
+                               label(for="pathonserver") Path on server
+                               div(class="input-group")
+                                input(type="text", placeholder="Path on server", name="pathonserver",id="pathonserver" class="form-control" style="width:450px" ) 
+                              div(class="form-group")
+                               label(for="friendlyservername") Friendly Server Name
+                               div(class="input-group")
+                                input(type="text", placeholder="Friendly Server Name", name="friendlyservername",id="friendlyservername" class="form-control" style="width:450px")
+                              div(class="form-group")
+                               label(for="servername") Select Server OR
+                               div(class="input-group")
+                                select(name="servername",id="servername" class="form-control")
+                                 each ser , i in server
+                                  option(value=ser._id) #{ser.server_identifier_name}
+                               div(class="input-group")
+                                a(href="/newserver") Add a new server
+                              div(class="form-group")
+                               div(class="input-group")
+                                button(type="submit",id="submitbtn" class="btn btn-large btn-primary") Submit
+            div(id="here_table" class="col-md-7")

@@ -1,0 +1,51 @@
+html(lang="en")
+ head
+  title New Project
+  include head.jade
+  script.
+   $( document ).ready(function()
+    {
+     $("#page-show").hide();
+     $("#unique_identifier").validate({
+         expression: "if (VAL.match(/^[a-z0-9\_]{3,30}$/)) return true; else return false;",message: "Please Enter Valid Identifier"
+     });
+     $("#email").validate({
+         expression: "if (validator.isEmail(VAL)) return true; else return false;",message: "Please Enter Valid Email"
+     });
+     $('#unique_identifier').on('keyup',function()
+     {
+       unique_identifier = $('#unique_identifier').val();
+       $.get("/uniqueproject",{unique_identifier : unique_identifier },function(data){
+         $('#message').val(data.isavailable)
+         $('#submitbtn').on('click',function()
+         {
+           //if(!data.isavailable)
+           {
+            $('#formAddUser').submit();
+           }
+         });
+        });
+      });
+    });
+  include body.jade
+     div(class="container")
+      div(class="col-md-6 col-md-offset-2") 
+       div(class="row" style="padding: 40px")
+        div(class="panel panel-default")
+         div(class="panel-heading")
+          h2(class="panel-title")
+           strong(align="center") NEW PROJECT
+         div(class="panel-body")  
+           form#formAddUser(name="adduser",method="post",action="/addproject")
+             div(class="form-group")
+              label(for="unique_identifier") Unique Identifier
+              div(class="input-group") 
+               input(type="text", placeholder="Uniquely identify project name", name="unique_identifier",id="unique_identifier",class="form-control",style="width:450px") 
+               input(type="text", placeholder="True if the given name is available", name="message",id="message",class="form-control",style="width:450px",readonly)
+             div(class="form-group")
+              label(for="email") Manager Email
+              div(class="input-group")
+               input(type="email", placeholder="Email Address", name="email",id="email",class="form-control",style="width:450px")
+             div(class="form-group")
+              div(class="input-group")
+              button(type="button",id="submitbtn",class="btn btn-large btn-primary") Submit
