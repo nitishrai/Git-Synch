@@ -1,0 +1,33 @@
+html(lang="en")
+    head
+        title Login
+        include head.jade
+        script.
+            $( document ).ready(function()
+            {
+            $("#login_name").validate({
+                expression: "if (VAL!='') return true; else return false;",message: "Please Enter Login Name"
+            });
+            });
+    body
+        div(class="container")
+            div(class="col-md-6 col-md-offset-3")
+                div(class="row" style="padding: 40px;margin-top: 88px")
+                    div(class="panel panel-default" style:"align:center")
+                        div(class="panel-heading")
+                            h2(class="panel-title")
+                                strong LOGIN
+                        div(class="panel-body")
+                            div(class="list-group")
+                                form#formAddbranch(name="addbranch",method="post",action="/gitapi/loginapi")
+                                    div(class="form-group")
+                                        label(for="login_name") Login Name
+                                        div(class="input-group")
+                                            input(type="text", placeholder="Login Name", name="login_name",id="login_name",value="",class="form-control",style="width:450px", autocomplete="off") 
+                                    div(class="form-group")
+                                        label(for="password") Password
+                                        div(class="input-group")
+                                            input(type="password", placeholder="",class="form-control" ,name="password",id="password",value="",style="width:450px") 
+                                    div(class="form-group" align="center")
+                                        div(class="input-group")
+                                            button(type="submit",id="submitbtn",class="btn btn-large btn-primary") Login

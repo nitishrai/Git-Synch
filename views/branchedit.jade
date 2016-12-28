@@ -1,0 +1,156 @@
+html(lang="en")
+head
+    title Branch Edit
+    include head.jade
+    script.
+        $(document).ready(function(){
+            serverData ='';
+            $("#branchname").validate({
+              expression: "if (VAL.match(/^[a-z0-9\_-]{3,30}$/)) return true; else return false;",message: "Please Enter Branch Name"
+            });
+            $("#pathonserver").validate({
+                expression: "if (VAL.match(/^[a-zA-Z0-9\/_-]{3,200}$/)) return true; else return false;",message: "Please Enter Valid Path"
+            });
+            $("#friendlyservername").validate({
+                expression: "if (VAL.match(/^[a-zA-Z0-9\_ -]{3,60}$/)) return true; else return false;",message: "Please Enter Valid ServerName"
+            });
+            $("#servername").validate({
+                expression: "if (VAL!='') return true; else return false;",message: "Please Select A Server"
+            });
+            $("#web_url").validate({
+              expression: "if (validator.isURL(VAL)) return true; else return false;",message: "Please Enter Valid URL"
+            });
+            if($('#dbpresent').is(':checked')) {
+                $("#database").show();
+            }   
+            else
+            {   
+                $("#database").hide();
+                $("#db_url").val('');
+                $("#db_name").val('');
+                $("#db_username").val('');
+                $("#db_password").val('');
+            }    
+            $("#dbpresent").change(function() {
+                if(this.checked) {
+                    $("#database").show();
+                    $("#db_url").validate({
+                      expression: "if (validator.isURL(VAL)) return true; else return false;",message: "Please Enter Valid URL"
+                    });
+                    $("#db_name").validate({
+                      expression: "if (VAL!='') return true; else return false;",message: "Please Enter Database Name"
+                    });
+                    $("#db_username").validate({
+                          expression: "if (VAL!='') return true; else return false;",message: "Please Enter Username"
+                    });
+                    $("#db_password").validate({
+                      expression: "if (VAL!='') return true; else return false;",message: "Please Enter Password"
+                    });
+                }
+                else
+                {
+                    $("#database").hide();
+                    $("#db_url").val('');
+                    $("#db_name").val('');
+                    $("#db_username").val('');
+                    $("#db_password").val('');
+                }
+            });
+            $("#servername").ready(function()
+            {
+                var servername = $("#servername").val();
+                $.get('/fetchserver',{servername:servername},function(data){
+                    serverData = data;
+                });
+            });
+            $("#servername").on('change',function()
+            {
+                var servername = $("#servername").val();
+                $.get('/fetchserver',{servername:servername},function(data){
+                    serverData = data;
+                    var pathonserver = $("#pathonserver").val();
+                    var res = pathonserver.split("/");
+                    var resLength = res.length;
+                    $("#web_url").val(serverData+'/'+res[resLength-1]);
+                });
+            });
+            $("#pathonserver").on('keyup',function(){
+                var pathonserver = $("#pathonserver").val();
+                var res = pathonserver.split("/");
+                var resLength = res.length;
+                $("#web_url").val(serverData+'/'+res[resLength-1]);
+            });
+        });
+include body.jade
+     div(class="container" style="width:1048px")
+            div(class="col-md-6 col-md-offset-2")
+                div(class="row" style="padding: 40px;margin-right:-80px")
+                        div(class="panel panel-default")
+                              div(class="panel-heading")
+                                    h2(class="panel-title")
+                                    strong(align="center") BRANCH EDIT
+                              div(class="panel-body")
+                                each branchd , i in branchdata
+                                       form#formUpdatebranch(name="updatebranch",method="post",action="/updatebranch")
+                                        input(type="hidden",name="project_id",value="#{branchd.unique_identifier}", id="project_id")
+                                        input(type="hidden",name="branch_id",value="#{branchd.branches.branch_id}", id="branch_id")   
+                                        div(class="form-group")
+                                            label(for="branchname") Branch Name
+                                            div(class="input-group")
+                                                input(type="text", placeholder="Branch Name", name="branchname",id="branchname",value="#{branchd.branches.branchname}" class="form-control" style="width:450px" autocomplete="off") 
+                                        div(class="form-group" id="server_form")
+                                            label(for ="servername") Select Server
+                                            div(class="input-group")
+                                                select(name="servername",id="servername" class="form-control" style="width:450px")
+                                                    option(value="" class="form-control" style="width:450px") ---Select---
+                                                    each ser , i in server
+                                                        if ser._id.toString()==branchd.branches.servername.toString()
+                                                            option(value=ser._id, selected = "selected",class="form-control" style="width:450px") #{ser.server_identifier_name}
+                                                        else
+                                                            option(value=ser._id, class="form-control" style="width:450px") #{ser.server_identifier_name} 
+                                        div(class="form-group")
+                                            label(for="pathonserver") Path on server
+                                            div(class="input-group")
+                                                input(type="text", placeholder="Path on server", name="pathonserver",id="pathonserver",value="#{branchd.branches.pathonserver}" class="form-control" style="width:450px" autocomplete="off") 
+                                        div(class="form-group")
+                                            label(for="runuser") RunAs (only for cpanel Acccount)
+                                            div(class="input-group")
+                                                input(type="text",placeholder="Run As", name="runuser",id="runuser" class="form-control" value="#{branchd.branches.runuser}" style="width:450px" autocomplete="off") 
+                                        div(class="form-group")
+                                            label(for="web_url") Web Url Address
+                                            div(class="input-group")
+                                                input(type="text", placeholder="Web Url Address", name="web_url",id="web_url",class="form-control",value="#{branchd.branches.web_url}",style="width:450px" autocomplete="off")
+                                        div(class="form-group")
+                                            label(for="friendlyservername") Friendly Server Name
+                                            div(class="input-group")
+                                                input(type="text", placeholder="Friendly Server Name", name="friendlyservername",id="friendlyservername",value="#{branchd.branches.friendlyservername}" class="form-control" style="width:450px" autocomplete="off")
+                                        if(branchd.branches.database!='')
+                                            div(class="checkbox")
+                                                label
+                                                    input(type="checkbox" value="1",name="dbpresent", id="dbpresent" checked)
+                                                    | Database
+                                        else
+                                            div(class="checkbox")
+                                            label
+                                              input(type="checkbox" value="1",name="dbpresent", id="dbpresent")
+                                              | Database
+                                        div(id="database")
+                                            div(class="form-group")
+                                              label(for="db_url") DB URL
+                                              div(class="input-group")
+                                                input(type="text", placeholder="Database URL", name="db_url",id="db_url" value="#{branchd.branches.database.db_url}" class="form-control" style="width:450px" autocomplete="off")
+                                            div(class="form-group")
+                                              label(for="db_name") DB Name
+                                              div(class="input-group")
+                                                input(type="text", placeholder="Database Name", name="db_name",id="db_name" value="#{branchd.branches.database.db_name}" class="form-control" style="width:450px" autocomplete="off")
+                                            div(class="form-group")
+                                              label(for="db_username") DB UserName
+                                              div(class="input-group")
+                                                input(type="text", placeholder="DB Username", name="db_username",id="db_username" value="#{branchd.branches.database.db_username}" class="form-control" style="width:450px" autocomplete="off")
+                                            div(class="form-group")
+                                              label(for="db_password") DB Password
+                                              div(class="input-group")
+                                                input(type="text", placeholder="DB Password", name="db_password",id="db_password" value="#{branchd.branches.database.db_password}" class="form-control" style="width:450px" autocomplete="off")
+                                        div(class="form-group")
+                                            div(class="input-group")
+                                                button(type="submit",id="submitbtn" class="btn btn-large btn-primary") Submit

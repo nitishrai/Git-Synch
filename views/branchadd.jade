@@ -1,0 +1,172 @@
+html(lang="en")
+  head
+    title Branch Add
+    include head.jade
+  include body.jade
+      div(class="container" style="width:1048px")
+            div(class="col-md-6 col-md-offset-2")
+                div(class="row" style="padding: 40px;margin-right:-80px")
+                  div(class="panel panel-default")
+                      div(class="panel-heading")
+                          h2(class="panel-title")
+                              strong(align="center") BRANCH ADD
+                      div(class="panel-body")
+                          div(class="list-group")
+                            form#formAddbranch(name="addbranch",method="post",action="/addbranch")
+                                if(gitProjectId)
+                                  input(type="hidden",name="gitProjectId",value="#{gitProjectId}", id="gitProjectId")
+                                input(type="hidden",name="project_id",value="#{project_id}", id="project_id")
+                                div(class="form-group")
+                                 label(for="branchname") Branch Name
+                                 div(for="input-group")
+                                  input(type="text", placeholder="Branch Name", name="branchname",id="branchname" value="" class="form-control" style="width:450px" autocomplete="off") 
+                                div(class="form-group")
+                                 label(for="servername") Select Server
+                                  div(class="input-group")
+                                  select(name="servername",id="servername" class="form-control" style="width:450px")
+                                   option(value="0" class="form-control" style="width:450px") ---Select---
+                                   each ser , i in server
+                                    option(value="ser._id" class="form-control" style="width:450px") #{ser.server_identifier_name}
+                                div(class="form-group")
+                                 label(for="ostype") Operating System Type
+                                  div(class="input-group")
+                                  select(name="ostype",id="ostype" class="form-control" style="width:450px")
+                                   option(value="linux" class="form-control" style="width:450px") Linux 
+                                   option(value="windows" class="form-control" style="width:450px") Windows
+                                div(align="center")
+                                 label(for="newserver") OR    
+                                 div(class="input-group")
+                                  a(href="/newserver" , id="newserver", target="_blank") Add a New Server
+                                div(class="form-group")
+                                 label(for="pathonserver") Path on server
+                                 div(class="input-group")
+                                  input(type="text", placeholder="Path on server", name="pathonserver",id="pathonserver" class="form-control" style="width:450px" autocomplete="off")
+                                div(class="form-group")
+                                  label(for="runuser") RunAs(In case of shell access)
+                                  div(class="input-group")
+                                    input(type="text",placeholder="Run As", name="runuser",id="runuser" class="form-control" style="width:450px" autocomplete="off") 
+                                if(gitProjectId)
+                                  div(class="form-group")
+                                   label(for="createBranchFrom") Create Branch From
+                                    div(class="input-group")
+                                    select(name="createBranchFrom",id="createBranchFrom" class="form-control" style="width:450px")
+                                     option(value="" class="form-control" style="width:450px") ---Select---
+                                     each bData , i in branchDetails.branches
+                                        option(value="#{bData.branchname}" class="form-control" style="width:450px") #{bData.branchname}
+                                div(class="form-group")
+                                  label(for="email") Web Url Address
+                                  div(class="input-group")
+                                    input(type="text", placeholder="Web Url Address", name="web_url",id="web_url",class="form-control",style="width:450px" autocomplete="off")
+                                div(class="form-group")
+                                 label(for="friendlyservername") Friendly Server Name
+                                 div(class="input-group")
+                                  input(type="text", placeholder="Friendly Server Name", name="friendlyservername",id="friendlyservername" class="form-control" style="width:450px" autocomplete="off")
+                                div(class="checkbox")
+                                  label
+                                    input(type="checkbox" value="1",name="dbpresent", id="dbpresent")
+                                    | Database
+                                if(gitProjectId)
+                                  div(id="make_directory")
+                                    div(class="checkbox")
+                                      label
+                                        input(type="checkbox" value="1",name="makeDirectory", id="makeDirectory")
+                                        | Make Directory 
+                                div(id="database")
+                                  div(class="form-group")
+                                    label(for="db_url") DB URL
+                                    div(class="input-group")
+                                      input(type="text", placeholder="Database URL", name="db_url",id="db_url" class="form-control" style="width:450px" autocomplete="off")
+                                  div(class="form-group")
+                                    label(for="db_name") DB Name
+                                    div(class="input-group")
+                                      input(type="text", placeholder="Database Name", name="db_name",id="db_name" class="form-control" style="width:450px" autocomplete="off")
+                                  div(class="form-group")
+                                    label(for="db_username") DB UserName
+                                    div(class="input-group")
+                                      input(type="text", placeholder="DB Username", name="db_username",id="db_username" class="form-control" style="width:450px" autocomplete="off")
+                                  div(class="form-group")
+                                    label(for="db_password") DB Password
+                                    div(class="input-group")
+                                      input(type="text", placeholder="DB Password", name="db_password",id="db_password" class="form-control" style="width:450px" autocomplete="off")
+                                div(class="form-group")
+                                 div(class="input-group")
+                                  button(type="submit",id="submitbtn" class="btn btn-large btn-primary") Submit
+    script.
+      $(document).ready(function(){
+        serverData='';
+        $("#database").hide();
+        $("#branchname").validate({
+          expression: "if (VAL.match(/^[a-z0-9\_-]{3,30}$/)) return true; else return false;",message: "Please Enter Branch Name"
+        });
+        //- $("#pathonserver").validate({
+        //-     expression: "if (VAL.match(/^[a-zA-Z0-9\/_.-]{3,200}$/)) return true; else return false;",message: "Please Enter Valid Path"
+        //- });
+        $("#friendlyservername").validate({
+            expression: "if (VAL.match(/^[a-zA-Z0-9\_ -]{3,60}$/)) return true; else return false;",message: "Please Enter Valid ServerName"
+        });
+        $("#servername").validate({
+            expression: "if (VAL!='') return true; else return false;",message: "Please Select A Server"
+        });
+        $("#web_url").validate({
+          expression: "if (validator.isURL(VAL)) return true; else return false;",message: "Please Enter Valid URL"
+        });
+        $("#servername").on('change',function()
+        {
+          var servername = $("#servername").val();
+          $.get('/fetchserver',{servername:servername},function(data){
+            serverData = data;
+            var pathonserver = $("#pathonserver").val();
+            var res = pathonserver.split("/");
+            var resLength = res.length;
+            var path = '/'+res[resLength-1];
+            $("#web_url").val(serverData+path);
+          });
+        });
+        $("#pathonserver").on('keyup',function(){
+          var pathonserver = $("#pathonserver").val();
+          var check_pathonserver = /^([a-zA-Z0-9\/\_.\- ]{3,200})|([a-zA-Z]:\\[a-zA-Z0-9_ \\]+)$/.test(($(this).val()));
+          console.log(check_pathonserver);
+          //if(!check_pathonserver)
+            //alert('Entered In Correct Path');
+          var res = pathonserver.split("/");
+          var resLength = res.length;
+          var path = '/'+res[resLength-1];
+          $("#web_url").val(serverData+path);
+        });
+        
+        $("#createBranchFrom").on('change',function(){
+          var isValueSet = $(this).val();
+          if(isValueSet!='')
+          {
+            $("#make_directory").hide();
+          }
+          else
+            $("#make_directory").show();
+        });
+        
+        $("#dbpresent").change(function() {
+          if(this.checked) {
+            $("#database").show();
+            $("#db_url").validate({
+              expression: "if (validator.isURL(VAL)) return true; else return false;",message: "Please Enter Valid URL"
+            });
+            $("#db_name").validate({
+              expression: "if (VAL!='') return true; else return false;",message: "Please Enter Database Name"
+            });
+            $("#db_username").validate({
+              expression: "if (VAL!='') return true; else return false;",message: "Please Enter Username"
+            });
+            $("#db_password").validate({
+              expression: "if (VAL!='') return true; else return false;",message: "Please Enter Password"
+            });
+          }
+          else
+            {
+              $("#database").hide();
+              $("#db_url").val('');
+              $("#db_name").val('');
+              $("#db_username").val('');
+              $("#db_password").val('');
+            }
+        });
+      });

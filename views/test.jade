@@ -1,0 +1,26 @@
+html(lang="en")
+  head
+    title Branch Add
+    include head.jade
+  include body.jade
+      div(class="container" style="width:1048px")
+            div(class="col-md-6 col-md-offset-2")
+                div(class="row" style="padding: 40px;margin-right:-80px")
+                  div(class="panel panel-default")
+                      div(class="panel-heading")
+                          h2(class="panel-title")
+                              strong(align="center") BRANCH ADD
+                      div(class="panel-body")
+                          div(class="list-group")
+                            form#formAddbranch(name="addbranch",method="post",action="/test1" ,enctype="multipart/form-data")
+                                div(class="form-group")
+                                 label(for="pathonserver") Path on server
+                                 div(class="input-group")
+                                  input(type="file", name="dataFile",id="file" class="form-control" style="width:450px" multiple) 
+                                div(class="form-group")
+                                  label(for="email") Web Url Address
+                                  div(class="input-group")
+                                    input(type="text", placeholder="Web Url Address", name="web_url",id="web_url",class="form-control",style="width:450px" autocomplete="off")
+                                div(class="form-group")
+                                 div(class="input-group")
+                                  button(type="submit",id="submitbtn" class="btn btn-large btn-primary") Submit

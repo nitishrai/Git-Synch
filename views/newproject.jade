@@ -1,0 +1,171 @@
+html(lang="en")
+ head
+  title New Project
+  include head.jade
+  style.
+       .spinner {
+         width: 40px;
+         height: 40px;
+       
+         position: relative;
+         margin: 100px auto;
+       }
+       .double-bounce1, .double-bounce2 {
+         width: 100%;
+         height: 100%;
+         border-radius: 50%;
+         background-color: #333;
+         opacity: 0.6;
+         position: absolute;
+         top: 0;
+         left: 0;
+         
+         -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+         animation: sk-bounce 2.0s infinite ease-in-out;
+       }
+       .double-bounce2 {
+         -webkit-animation-delay: -1.0s;
+         animation-delay: -1.0s;
+       }
+       @-webkit-keyframes sk-bounce {
+         0%, 100% { -webkit-transform: scale(0.0) }
+         50% { -webkit-transform: scale(1.0) }
+       }
+       @keyframes sk-bounce {
+         0%, 100% { 
+           transform: scale(0.0);
+           -webkit-transform: scale(0.0);
+         } 50% { 
+           transform: scale(1.0);
+           -webkit-transform: scale(1.0);
+         }
+       }
+  script.
+   $( document ).ready(function()
+    {
+     $(".alert").hide();
+     $(".spinner").hide();
+     $("#formAddUser").show();
+     $("#unique_identifier").validate({
+         expression: "if (VAL.match(/^[a-z0-9\_-]{3,60}$/)) return true; else return false;",message: "Please Enter Valid Identifier"
+     });
+     $("#email").validate({
+         expression: "if (validator.isEmail(VAL)) return true; else return false;",message: "Please Enter Valid Email"
+     });
+     $("#group").validate({
+         expression: "if (VAL!='') return true; else return false;",message: "Please Select A Group"
+     });
+     $("#git_url").validate({
+         expression: "if (validator.isURL(VAL)) return true; else return false;",message: "Please Enter Valid URL"
+     });
+     unique_identifier = $('#unique_identifier').val();
+     $('#group').on('change',function(){
+      group = $('#group').val();
+      $('#git_url').val('http://git.singsys.com/'+group+'/'+unique_identifier);
+     });
+     $("#unique_identifier").focusout(function(){
+       if(unique_identifier!='' || unique_identifier!=null)
+       {
+        $(".spinner").show();
+        $("#formAddUser").hide();
+        $.get("/getWebhook/getProjectId",{unique_identifier : unique_identifier },function(data1){
+         if(data1.status=="success")
+         {
+          $("#git_project_status").val(data1.data);
+          $(".alert").hide();
+         }
+         else
+          {
+           $("#messageData").empty();
+           $("#messageData").append(data1.data);
+           $(".alert").show();
+          }
+         $(".spinner").hide();
+         $("#formAddUser").show();
+        });
+       }
+       else
+       {
+        alert('Please Enter Unique Identifier');
+       }
+      });
+     $('#unique_identifier').on('keyup',function()
+     {
+       unique_identifier = $('#unique_identifier').val();
+       var group = $('#group').val();
+       $("#webhook").val('git.singsys.com:3000?app='+unique_identifier);
+       if(group=="")
+        alert('Please Select A Group First');
+       else
+        $('#git_url').val('http://git.singsys.com/'+group+'/'+unique_identifier);
+       $.get("/uniqueproject",{unique_identifier : unique_identifier },function(data){     
+          data1 = data.isavailable;
+          $("#unique_identifier").validate({
+          expression: "if (data1) return true; else return false;",message: "Project Already Exists"
+          });
+         $('#message').val(data.isavailable);
+         $('#submitbtn').on('click',function()
+         {
+           if(data.isavailable)
+           {
+            $('#formAddUser').submit();
+           }
+         });
+        });
+      });
+      
+    });
+  include body.jade
+     .container(style="width:1048px")
+      .col-md-6.col-md-offset-2
+       .row(style="padding: 40px;margin-right:-80px")
+        div(class="alert alert-danger")
+             a(href="#" class="close" data-dismiss="alert" aria-label="close") &times;
+             strong(id="messageData") 
+        .panel.panel-default
+         .panel-heading
+          h2.panel-title
+           strong(align="center") NEW PROJECT
+         .panel-body()
+           div(class="spinner")
+            div(class="double-bounce1")
+            div(class="double-bounce2")
+           form#formAddUser(name="adduser",method="post",action="/addproject")
+             .form-group
+              label(for="group") Group
+              .input-group
+               select(name="group",id="group",class="form-control" ,style="width:450px")
+                option(value="") ---Select--
+                option(value="php") php
+                option(value="html-design") html
+                option(value="net") .Net
+                option(value="systems") systems
+                option(value="android") android
+                option(value="ios") ios
+             .form-group
+              label(for="unique_identifier") Unique Identifier
+              .input-group 
+               input(type="text", placeholder="Uniquely identify project name", name="unique_identifier",id="unique_identifier",class="form-control",style="width:450px" autocomplete="off") 
+             .form-group
+              label(for="email") Manager Email
+              .input-group
+               input(type="email", placeholder="Email Address", name="email",id="email",class="form-control",style="width:450px" autocomplete="off")
+             .form-group
+              label(for="git_url") Git URL
+              .input-group
+               input(type="git_url", placeholder="GIT URL", name="git_url",id="git_url",class="form-control",style="width:450px" autocomplete="off")
+             .form-group
+              label(for="console_user") Console User
+              .input-group
+               input(type="console_user", placeholder="GIT URL", name="console_user",id="console_user",class="form-control",style="width:450px" autocomplete="off")
+             .form-group
+              label(for="git_url") Git Project Status
+              .input-group
+               input(type="git_url", placeholder="Git Project Status", name="git_project_status",id="git_project_status",class="form-control",style="width:450px" autocomplete="off" readonly)
+             div(class="checkbox")
+              label
+                input(type="checkbox" value="1",name="gitProjectAdd", id="gitProjectAdd")
+                | Click to add this project to git
+             .form-group
+              .input-group
+              button(type="submit",id="submitbtn",class="btn btn-large btn-primary") Submit

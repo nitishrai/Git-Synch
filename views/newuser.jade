@@ -1,0 +1,43 @@
+html(lang="en")
+head
+     script(type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js').
+     script.
+      $( document ).ready(function()
+      {
+       $('#servercred').hide();
+       $('#ifserver').change(function()
+       {
+        if ($(this).prop('checked'))
+        { 
+         $('#servercred').show();     
+        }
+        else
+        {
+         $('#servercred').hide();
+         $('#host').val(""); 
+         $('#user').val(""); 
+         $('#pass').val("");
+        }
+       });
+      });
+body
+    h1= title
+    form#formAddUser(name="adduser",method="post",action="/adduser")
+        input(type="text", placeholder="project name", name="projectname",id="pname")
+        input(type="text", placeholder="servername", name="servername",id="servername")
+        input(type="text", placeholder="localpath", name="localpath",id="localpath")
+        input(type="checkbox",name="ifserver",value="server",id="ifserver")
+        | If Server Credential Present
+        <br>
+        <br>
+        #servercred
+         | HostName 
+         input(type="text",placeholder="host",name="host",id="host")
+         <br>
+         | UserName 
+         input(type="text",placeholder="user",name="user",id="user")
+         <br>
+         | PassWord  
+         input(type="text",placeholder="pass",name="pass",id="pass")
+         <br>        
+        button#btnSubmit(type="button",onclick="fn()") Submit

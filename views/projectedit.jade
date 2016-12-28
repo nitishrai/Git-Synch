@@ -1,0 +1,97 @@
+html(lang="en")
+    head
+        title Project Edit
+        include head.jade
+        script.
+            $(document).ready(function(){
+                $("#unique_identifier").validate({
+                        expression: "if (VAL.match(/^[a-z0-9\_-]{3,60}$/)) return true; else return false;",message: "Please Enter Valid Identifier"
+                });
+                $("#web_url").validate({
+                       expression: "if (validator.isURL(VAL) || VAL=='' || VAL=='undefined') return true; else return false;",message: "Please Enter Valid URL"
+                });
+                $("#group").validate({
+                     expression: "if (VAL!='') return true; else return false;",message: "Please Select A Group"
+                });
+                $("#git_url").validate({
+                    expression: "if (validator.isURL(VAL)) return true; else return false;",message: "Please Enter Valid URL"
+                });
+                $("#email").validate({
+                    expression: "if (validator.isEmail(VAL)) return true; else return false;",message: "Please Enter Valid Email"
+                });
+                $("#webhook").validate({
+                    expression: "if (validator.isURL(VAL)) return true; else return false;",message: "Please Enter Web Hook"
+                });
+                $('#group').on('change',function(){
+                    group = $('#group').val();
+                    unique_identifier = $('#unique_identifier').val();
+                    $('#git_url').val('http://git.singsys.com/'+group+'/'+unique_identifier);
+                });
+                $('#unique_identifier').on('keyup',function(){
+                    unique_identifier = $('#unique_identifier').val();
+                    group = $('#group').val();
+                    $('#git_url').val('http://git.singsys.com/'+group+'/'+unique_identifier);
+                    $.get("/uniqueproject",{unique_identifier : unique_identifier },function(data){     
+                        data1 = data.isavailable;
+                        $("#unique_identifier").validate({
+                            expression: "if (data1) return true; else return false;",message: "Project Already Exists"
+                        });
+                    });
+                });
+                unique_identifier = $('#unique_identifier').val();
+                $("#webhook").val('http://localhost:3000?app='+unique_identifier);
+            });
+    include body.jade
+        div(class="container" style="width:1048px")
+            div(class="col-md-6 col-md-offset-2")
+                div(class="row" style="padding: 40px;margin-right:-80px")
+                    if(status)
+                        div(class="alert alert-#{status}")
+                            a(href="#" class="close" data-dismiss="alert" aria-label="close") &times;
+                            strong #{message}
+                    div(class="panel panel-default")
+                        div(class="panel-heading")
+                            h2(class="panel-title")
+                                strong(align="center") PROJECT INFORMATION EDIT
+                        div(class="panel-body")
+                            div(class="list-group")
+                                each projectdata , i in project
+                                    form#formUpdateproject(name="updateproject",method="post",action="/updateproject")
+                                        input(type="hidden",name="project_id",value="#{projectdata.unique_identifier}", id="project_id")
+                                        input(type="hidden",name="gitProjectId",value="#{projectdata.gitProjectId}", id="gitProjectId")
+                                        input(type="hidden",name="namespaceId",value="#{projectdata.namespaceId}", id="namespaceId")
+                                        .form-group
+                                            label(for="group") Group
+                                            .input-group
+                                                select(name="group",id="group",class="form-control" ,style="width:450px")
+                                                    option(value="") ---Select--
+                                                    option(value="php" selected='php'==projectdata.group) php
+                                                    option(value="html-design" selected='html-design'==projectdata.group) html
+                                                    option(value="systems" selected='systems'==projectdata.group) systems
+                                                    option(value="android" selected='android'==projectdata.group) android
+                                                    option(value="ios" selected='ios'==projectdata.group) ios
+                                        div(class="form-group")
+                                            label(for="unique_identifier") Unique Identifier
+                                            div(for="input-group")
+                                                input(type="text", placeholder="Unique Identify Project", name="unique_identifier",id="unique_identifier" value="#{projectdata.unique_identifier}" class="form-control" style="width:450px" autocomplete="off")
+                                        div(class="form-group")
+                                            label(for="console_user") Console User
+                                            div(for="input-group")
+                                                input(type="text", placeholder="Unique Identify Project", name="console_user",id="console_user" value="#{projectdata.console_user}" class="form-control" style="width:450px" autocomplete="off")  
+                                        div(class="form-group")
+                                            label(for="email") Manager Email
+                                            div(class="input-group")
+                                            input(type="text", placeholder="Manager Email", name="email",id="email" class="form-control" style="width:450px" value="#{projectdata.email}" autocomplete="off") 
+                                        .form-group
+                                            label(for="git_url") Git URL
+                                            .input-group
+                                                input(type="git_url", placeholder="GIT URL", name="git_url",value="#{projectdata.git_url}",id="git_url",class="form-control",style="width:450px" autocomplete="off")
+                                        if(projectdata.gitProjectId)
+                                            form-group
+                                                label(for="git_url") Web Hook
+                                                .input-group
+                                                    input(type="webhook", placeholder="Web Hook", name="webhook",value="#{projectdata.webhook}",id="webhook",class="form-control",style="width:450px" autocomplete="off")
+                                        div(class="form-group")
+                                        div(class="form-group")
+                                            div(class="input-group")
+                                                button(type="submit",id="submitbtn",class="btn btn-large btn-primary") Submit

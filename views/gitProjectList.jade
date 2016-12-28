@@ -1,0 +1,235 @@
+html(lang="en")
+    head
+        title Project Listing
+        include head.jade
+        script.
+            $(document).ready(function() {
+                //- var page = $("#page").val();
+                //- page = parseInt(page);
+                //- for (i = 2; i <= page; i++) {
+                //-     $.get('/gitapi/getallProject', {
+                //-         page: i
+                //-     }, function(data) {
+                //-         $.each(data, function(i, v) {
+                //-             $.each(v, function(c, x) {
+                //-                 var appendata = '<tr><td>';
+                //-                 appendata += x.name + '(' + x.namespace.name + ')';
+                //-                 appendata += '</td>';
+                //-                 appendata += '<td><a href="' + x.web_url + '" target="_blank">' + x.web_url + '</a></td>';
+                //-                 if (x.mongo != "") {
+                //-                     appendata += '<td><select id="' + x.name + '" class="page' + x.page + '">';
+                //-                     $.each(x.mongo, function(e, f) {
+                //-                         appendata += '<option value="' + f.branchname + '">' + f.branchname + '</option>';
+                //-                     })
+                //-                     appendata += '</select></td>';
+                //-                 } else
+                //-                     appendata += '<td></td>';
+                //-                 appendata += '<td></td>';
+                //-                 appendata += '</tr>';
+                //-                 $('tbody').append(appendata);
+                //-             })
+                //-         })
+                //-     });
+                //- }
+                
+                $(".pretextdata").on('change',function(){
+                    var tr = $(this).closest('tr');
+                    var pname = tr.find('select').attr('id');
+                    tr.find('#gitstatus').attr('data-href','/gitRunCommand?app='+pname+'&branch='+$(this).val());
+                    tr.find('#gitpull').attr('data-href','/gitRunCommand?app='+pname+'&branch='+$(this).val()+'&gitpull=true');
+                    tr.find('#gitconsole').attr('href','/gitapi/console?app='+pname+'&branch='+$('option:selected', this).attr('branchid'));
+                });
+                
+                $(document).on('click', 'select', function() {
+                    $(this).find('tr').each(function() {
+                        $(this).find('td').eq(n).after('<td>new cell added</td>');
+                    });
+                });
+                
+                $(".typeahead").keyup(function() {
+                    $("#error").empty();
+                    $("#old tbody").find("tr").hide();
+                    var data = this.value.toLowerCase().split(" ");
+                    var jo = $("#old tbody").find("tr");
+                    $.each(data, function(i, v) {
+                        jo = jo.filter("*:contains('" + v + "')");
+                        if (jo.length == 0) {
+                            var content = '<table><tr><td style="font-size:14px;text-align:center;margin-left: 62px;width: 450px;">No Server Exist with this name <a href="/newserver"> Click To Add It </a></td></tr></table>'
+                            $("#error").append(content);
+                        }
+                    });
+                    jo.show();
+                });
+                
+                $(".git").click(function() {
+
+                    $('#myModalLabel').empty();
+                    var href = $(this).attr('data-href');
+                    var id = $(this).attr('id');
+                    $("#gitpull").hide();
+                    if (id == "gitstatus") {
+                        $("#gitpull").attr("data-href", href + '&gitpull=true');
+                    }
+                    var title = $(this).attr('title');
+                    $('#myModalLabel').append(title);
+                    $(".spinner").show();
+                    $(".gitData").hide();
+                    $.get(href, function(data) {
+                        $(".gitData").empty();
+                        $(".gitData").append(data);
+                        if (id == "gitstatus") {
+                            $("#gitpull").show();
+                        }
+                        $(".gitData").show();
+                        $(".spinner").hide();
+                    });
+                });
+            });
+        style.
+            .bs-example{
+                margin: 150px 50px;
+            }
+            .pretextdata {
+                border-radius: 0px !important;
+                width: 108px;
+                width: 143px;
+                font-size: 14px;
+            }
+            a#gitfileupload {
+                padding-left: 5%;
+            }
+            .popover-medium {
+                max-width: 350px;
+            }
+            .bs-example{
+                    font-family: sans-serif;
+                    position: relative;
+                    margin: 50px;
+            }
+            .typeahead, .tt-query, .tt-hint {
+                    border: 2px solid #CCCCCC;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    height: 30px;
+                    line-height: 30px;
+                    outline: medium none;
+                    vertical-align:none;
+                    margin-left:190px;
+                    padding: 8px 12px;
+                    width: 206px;
+            }
+            .panel-body {
+                    padding: 0px !important; 
+            }
+            #old tr td:first { width : 20%; }
+            #old tr td:nth-child(2) { width : 10%; }
+            #old tr td:nth-child(3) { width : 20%; text-align:center}
+            #error tr td:first { width : 80%; }
+            .spinner {
+              width: 40px;
+              height: 40px;
+            
+              position: relative;
+              margin: 100px auto;
+            }
+            .bracnh_cls {
+                text-align:center;
+            }
+            .double-bounce1, .double-bounce2 {
+              width: 100%;
+              height: 100%;
+              border-radius: 50%;
+              background-color: #333;
+              opacity: 0.6;
+              position: absolute;
+              top: 0;
+              left: 0;
+              
+              -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+              animation: sk-bounce 2.0s infinite ease-in-out;
+            }
+            
+            .double-bounce2 {
+              -webkit-animation-delay: -1.0s;
+              animation-delay: -1.0s;
+            }
+            
+            @-webkit-keyframes sk-bounce {
+              0%, 100% { -webkit-transform: scale(0.0) }
+              50% { -webkit-transform: scale(1.0) }
+            }
+            
+            @keyframes sk-bounce {
+              0%, 100% { 
+                transform: scale(0.0);
+                -webkit-transform: scale(0.0);
+              } 50% { 
+                transform: scale(1.0);
+                -webkit-transform: scale(1.0);
+              }
+            }
+    div(id="page-content-wrapper")
+        div(class="container-fluid")
+            div(class="header-content")
+                div(class="navbar-collapse collapse")
+                    ul(class="nav navbar-nav pull-right")
+                        li
+                            a(href="/signout" class="btn btn-default")
+                                span(class="glyphicon glyphicon-log-out")
+                                    Logout
+                div(class="col-lg-12")
+                  div(id="page-show")
+                    div(class="container")
+                        div(class="col-md-12")
+                            div(class="row" style="padding: 40px;")
+                                div(class="panel panel-default")
+                                    div(class="panel-heading")
+                                        h2(class="panel-title")
+                                            strong Project LIST
+                                            input(type="hidden" id="page" name="page" value ="#{page}")
+                                            input(type="text" name="typeahead" class="typeahead tt-query" autocomplete="off" spellcheck="false" placeholder="Search Project" align="right" style="margin-left:600px;vertical-align: none;")
+                                    div(class="panel-body")
+                                        table(id="old" class="table table-striped")
+                                            thead
+                                                tr
+                                                    th Server
+                                                    th URL
+                                                    th(class="bracnh_cls") Branch
+                                                    th Actions
+                                            if data.length > 0
+                                                each gitdata, i in data
+                                                    if(typeof(gitdata.mongo)=="object")
+                                                        tr(id="#{gitdata.id}")
+                                                            td #{gitdata.name}(#{gitdata.namespace.name})
+                                                            td
+                                                                a(href="#{gitdata.web_url}" target="_blank") #{gitdata.web_url}
+                                                            td
+                                                                select(id="#{gitdata.name}" group="#{gitdata.namespace.path}" class="pretextdata")    
+                                                                    option(value="") Select Branch
+                                                                    each odata,i in gitdata.mongo
+                                                                        option(value="#{odata.branchname}" branchid="#{odata.branch_id}") #{odata.branchname}
+                                                            td
+                                                                if(typeof(gitdata.mongo)=="object")
+                                                                    a(href="#" data-href="/gitRunCommand?app=#{gitdata.name}&branch=develop" id="gitstatus" data-toggle="modal" data-target="#myModal" class="git" title="Git Status") Status
+                                                                    &nbsp;
+                                                                    a(href="#" data-href="/gitRunCommand?app=#{gitdata.name}&branch=develop&gitpull=true" id="gitpull" data-toggle="modal" data-target="#myModal" class="git" title="Git Pull") Pull
+                                                                    //a(href="/fileview/project/#{gitdata.name}/develop" id="gitfileupload" data-toggle="modal") File
+                                                                    &nbsp;
+                                                                    a(target="_blank" id="gitconsole") Console
+
+                                    div(class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel")
+                                        div(class="modal-dialog" role="document")
+                                            div(class="modal-content")
+                                                div(class="modal-header")
+                                                    button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                        span(aria-hidden="true") &times;
+                                                    h4(class="modal-title" id="myModalLabel") 
+                                                div(class="modal-body")
+                                                    div(class="spinner")
+                                                        div(class="double-bounce1")
+                                                        div(class="double-bounce2")
+                                                    pre(class="gitData")
+                                                div(class="modal-footer")
+                                                  button(type="button" class="btn btn-default" data-dismiss="modal") Close
+                                                  a(class="btn btn-primary" id="gitpull" class="git" title="Git Pull") Git Pull
+

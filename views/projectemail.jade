@@ -1,0 +1,70 @@
+html(lang="en")
+    head
+        title Email
+        include head.jade
+        script.
+            $(function() {
+                $('#emailTo, #emailCc').keyup(function(){
+                    function split( val ) {
+                        return val.split( /,\s*/ );
+                    }
+                    function extractLast( term ) {
+                        return split( term ).pop();
+                    }   
+                    var emailValue = $(this).val();
+                    var eArray = [];
+                    $.get('/searchemail',{term:emailValue},function(data){
+                        $.each(data,function(key,value){
+                            eArray.push(value.email);
+                        })
+                        $("#emailTo,#emailCc ").autocomplete({
+                            source: function( request, response )   {
+                                                                        response( $.ui.autocomplete.filter(
+                                                                        eArray, extractLast( request.term ) ) );
+                                                                    }, 
+                            minLength: 0,
+                            multiselect: true,
+                            focus: function()   {
+                                                    return false;
+                                                },
+                            select: function( event, ui )   {
+                                                                var terms = split( this.value );
+                                                                terms.pop();
+                                                                terms.push( ui.item.value );
+                                                                terms.push( "" );
+                                                                this.value = terms.join( "," );
+                                                                return false;
+                                                            }
+                        });	
+                    });
+                });
+            				
+            });
+    include body.jade
+          div(class="container" style="width:1048px")
+            div(class="col-md-6 col-md-offset-2")
+                div(class="row" style="padding: 40px;margin-right:-80px")
+                            div(class="panel panel-default")
+                                  div(class="panel-heading")
+                                        h2(class="panel-title")
+                                        strong(align="center") EMAIL
+                                  div(class="panel-body")
+                                            form#formSendEmail(name="projectEmail",method="post",action="/projectEmail")
+                                                input(type="hidden" value="#{project_id}",name="project_id",id="project_id")
+                                                div(class="form-group")
+                                                    label(for="emailTo") To
+                                                    div(class="input-group")
+                                                        input(type="text", placeholder="To", name="emailTo",id="emailTo",value="" class="form-control" style="width:450px" autocomplete="off")
+                                                div(class="form-group")
+                                                    label(for="emailCc") Cc
+                                                    div(class="input-group")
+                                                        input(type="text", placeholder="Cc", name="emailCc",id="emailCc",value="" class="form-control" style="width:450px" autocomplete="off")
+                                                label(for="emailDear") Dear &nbsp;
+                                                    input(type="text", placeholder="To Whom", name="emailDear",id="emailDear",value="" class="form-control" style="width:100px" autocomplete="off")
+                                                div(class="form-group")
+                                                    label(for="emailTo") Extra Notes
+                                                    div(class="input-group")
+                                                        textarea(class="form-class" name="message" style="margin: 0px; height: 76px; width: 450px;")
+                                                div(class="form-group")
+                                                    div(class="input-group")
+                                                        button(type="submit",id="submitbtn" class="btn btn-large btn-primary") Submit

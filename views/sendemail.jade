@@ -1,0 +1,127 @@
+html(lang="en")
+    head
+        title Email
+        include head.jade
+        script.
+            $(document).ready(function()
+            {
+                $('#emailTo,#emailCc').keyup(function(){
+                    function split( val ) {
+                        return val.split( /,\s*/ );
+                    }
+                    function extractLast( term ) {
+                        return split( term ).pop();
+                    }   
+                    var emailValue = $(this).val();
+                    var eArray = [];
+                    $.get('/searchemail',{term:emailValue},function(data){
+                        $.each(data,function(key,value){
+                            eArray.push(value.email);
+                        })
+                        $("#emailTo,#emailCc").autocomplete({
+                            source: function( request, response )   {
+                                                                        response( $.ui.autocomplete.filter(
+                                                                        eArray, extractLast( request.term ) ) );
+                                                                    }, 
+                            minLength: 0,
+                            multiselect: true,
+                            focus: function()   {
+                                                    return false;
+                                                },
+                            select: function( event, ui )   {
+                                                                var terms = split( this.value );
+                                                                terms.pop();
+                                                                terms.push( ui.item.value );
+                                                                terms.push( "" );
+                                                                this.value = terms.join( "," );
+                                                                return false;
+                                                            }
+                        });	
+                    });
+                });
+                var emailData = $("#emailData").val();
+                $.get('/emailDataFetch',{emailData : emailData},function(data)
+                {
+                    var eData = data;
+                    $("#url").val(eData.url);
+                    $("#phpmyadmin").val(eData.phpmyadmin);
+                    $("#db_user").val(eData.db_user);
+                    $("#db_password").val(eData.db_password);
+                    $("#db_name").val(eData.db_name);
+                    $("#git").val(eData.git);
+                    $("#branch").val(eData.branch);
+                    $("#friendlyservername").val(eData.friendlyservername);
+                    $("#unique_identifier").val(eData.unique_identifier);
+                });
+            });
+    include body.jade
+        div(class="container" style="width:1048px")
+            div(class="col-md-7 col-md-offset-2")
+                    div(class="row" style="padding: 40px;margin-right:-80px")
+                        div(class="panel panel-default")
+                            div(class="panel-heading")
+                                h2(class="panel-title")
+                                strong(align="center") EMAIL
+                            div(class="panel-body")
+                                      form#formSendEmail(name="sendemail",method="post",action="/sendemail")
+                                          input(type="hidden", value="#{email}",name="emailData" id="emailData")
+                                          input(type="hidden", value="",name="unique_identifier",id="unique_identifier")
+                                          div(class="form-group")
+                                              label(for="emailTo") To
+                                              div(class="input-group")
+                                                  input(type="text", placeholder="To", name="emailTo",id="emailTo",value="" class="form-control" style="width:450px" autocomplete="off")
+                                          div(class="form-group")
+                                              label(for="emailCc") Cc
+                                              div(class="input-group")
+                                                  input(type="text", placeholder="Cc", name="emailCc",id="emailCc",value="" class="form-control" style="width:450px" autocomplete="off")
+                                          label(for="emailDear") Dear &nbsp;
+                                              input(type="text", placeholder="To Whom", name="emailDear",id="emailDear",value="" class="form-control" style="width:100px" autocomplete="off")
+                                          <hr>
+                                          table(style="width:550px" class="table table-hover")
+                                              tr
+                                                  td
+                                                      label(for="friendlyservername" style="font-size: 14px;") Friendly Server Name
+                                                  td(style="height: 20px; font-size: 14px;")
+                                                      input(type="text" class="form-control" id="friendlyservername" name="friendlyservername" style="height: 30px;")
+                                              tr
+                                                  td
+                                                      label(for="url" style="font-size: 14px;") URL
+                                                  td(style="height: 20px; font-size: 14px;")
+                                                      input(type="text" class="form-control" id="url" name="url" style="height: 30px;")
+                                              tr
+                                                  td
+                                                      label(for="phpmyadmin" style="font-size: 14px;") phpmyAdmin
+                                                  td(style="height: 20px;")
+                                                      input(type="text" class="form-control" id="phpmyadmin" name="phpmyadmin" style="height: 30px;" autocomplete="off")
+                                              tr
+                                                  td
+                                                      label(for="db_user" style="font-size: 14px;") DB User
+                                                  td(style="height: 20px;")
+                                                      input(type="text" class="form-control" id="db_user" name="db_user" style="height: 30px;" autocomplete="off")
+                                              tr
+                                                  td
+                                                      label(for="db_password" style="font-size: 14px;") DB Password
+                                                  td(style="height: 20px;")
+                                                      input(type="text" class="form-control" id="db_password" name="db_password" style="height: 30px;" autocomplete="off")
+                                              tr
+                                                  td
+                                                      label(for="db_name" style="font-size: 14px;") DB Name
+                                                  td(style="height: 20px;")
+                                                      input(type="text" class="form-control" id="db_name"  name="db_name" style="height: 30px;" autocomplete="off")
+                                              tr
+                                                  td
+                                                      label(for="git" style="font-size: 14px;") Git
+                                                  td(style="height: 20px;")
+                                                      input(type="text" class="form-control" id="git" name="git" style="height: 30px;")
+                                              tr
+                                                  td
+                                                      label(for="branch" style="font-size: 14px;") Branch
+                                                  td(style="height: 20px;")
+                                                      input(type="text" class="form-control" id="branch" name="branch" style="height: 30px;" autocomplete="off")
+                                          div(class="form-group")
+                                              label(for="emailTo") Extra Notes
+                                              div(class="input-group")
+                                                  textarea(class="form-class" name="message" style="margin: 0px; height: 150px; width:540px; max-width: 540px;")
+                                          div(class="form-group")
+                                              div(class="input-group")
+                                                  button(type="submit",id="submitbtn" class="btn btn-large btn-primary") Submit

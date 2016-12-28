@@ -1,0 +1,29 @@
+html(lang="en")
+    head
+        title Command
+        include head.jade
+    include body.jade
+        div(class="container" style="width:1048px")
+            div(class="col-md-6 col-md-offset-2")
+                div(class="row" style="padding: 40px;margin-right:-80px")
+                    div(class="panel panel-default")
+                        div(class="panel-heading")
+                            h2(class="panel-title")
+                              strong(align="center") Command Add
+                        div(class="panel-body")
+                            div(class="list-group")
+                                form#formAddCommand(name="addbranch",method="post",action="/addcommand" ,enctype="multipart/form-data" autocomplete="off")
+                                    if(gitProjectId)
+                                      input(type="hidden",name="gitProjectId",value="#{gitProjectId}", id="gitProjectId")
+                                    input(type="hidden",name="project_id",value="#{project_id}", id="project_id")
+                                    div(class="form-group")
+                                     label(for="branchname") Command Name
+                                     div(for="input-group")
+                                      input(type="text", placeholder="Command Name <filename>", name="commandName",id="commandName" value="" class="form-control") 
+                                    div(class="form-group")
+                                     label(for="pathonserver") Command
+                                     div(class="input-group")
+                                     textarea(name="commandArea" class="form-control")
+                                    div(class="form-group")
+                                     div(class="input-group")
+                                      button(type="submit",id="submitbtn" class="btn btn-large btn-primary") Submit

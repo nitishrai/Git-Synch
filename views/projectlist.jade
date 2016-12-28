@@ -1,0 +1,108 @@
+html(lang="en")
+    head
+        title Project Listing
+        include head.jade
+        script.
+            $( document ).ready(function(){
+                $('[rel="popover"]').popover({
+                    trigger: 'hover',
+                    container: 'body',
+                    delay: {"hide": 2000},
+                    title: '<center>Branch Details</center>',
+                    template: '<div class="popover popover-medium" role="tooltip"><div class="arrow"></div><h3 class="popover-title">Branch Details</h3><div class="popover-content"></div></div>',
+                    html: true,
+                    content: function (){
+                        var clone = $($(this).data('popover-content')).clone().removeClass('hide');
+                        return clone;
+                    }
+                });
+                $(".typeahead").keyup(function(){
+                    $("#error").empty();
+                    $("#old tbody").find("tr").hide();
+                    var data = this.value.split(" ");
+                    var jo = $("#old tbody").find("tr");
+                    $.each(data, function(i, v){
+                        jo = jo.filter("*:contains('"+v+"')");
+                        if(jo.length==0)
+                        {
+                            var content = '<table><tr><td style="font-size:14px;text-align:center;margin-left: 62px;width: 450px;">No Project Exist with this name <a href="/newproject"> Click To Add It </a></td></tr></table>'
+                            $("#error").append(content);
+                        }
+                    });
+                    jo.show();
+                });
+            });
+        style.
+            .bs-example{
+                margin: 150px 50px;
+            }
+            .popover-medium {
+                max-width: 350px;
+            }
+            .bs-example{
+                    font-family: sans-serif;
+                    position: relative;
+                    margin: 50px;
+            }
+            .typeahead, .tt-query, .tt-hint {
+                    border: 2px solid #CCCCCC;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    height: 30px;
+                    line-height: 30px;
+                    outline: medium none;
+                    vertical-align:none;
+                    margin-left:140px;
+                    padding: 8px 12px;
+                    width: 206px;
+            }
+            .panel-body {
+                    padding: 0px !important; 
+            }
+            #old tr td:first { width : 90%; }
+            #old tr td:nth-child(2) { width : 10%; }
+            #old tr td:nth-child(3) { width : 1%; }
+            #error tr td:first { width : 80%; }
+    include body.jade
+        div(class="container" style="width:1048px")
+            div(class="col-md-6 col-md-offset-2")
+                div(class="row" style="padding: 40px;margin-right:-80px")
+                    div(class="panel panel-default")
+                        div(class="panel-heading")
+                            h2(class="panel-title")
+                                strong(align="center") PROJECT LIST
+                                input(type="text" name="typeahead" class="typeahead tt-query" autocomplete="off" spellcheck="false" placeholder="Search Project" align="right" style="margin-left:140px;vertical-align: none;")
+                        div(class="panel-body")
+                            div
+                                table(id="old" class="table table-striped")
+                                    thead
+                                        tr
+                                            td Project
+                                            td Branches
+                                            td 
+                                    if projects.length > 0
+                                        each project, i in projects
+                                                tr
+                                                    td
+                                                        a(href="/projectinfo/#{project.unique_identifier}")= project.unique_identifier
+                                                    td
+                                                        a(href="/branchdetails/#{project.unique_identifier}",rel="popover" data-popover-content="##{project.id}") #{project.branchLength}
+                                                    td                                                        
+                                                        div(id="#{project.id}",class="hide" style="width:300px" class="pop-content")
+                                                            table(class="table table-hover" style="width:290px;font-size:90%")
+                                                                    tr
+                                                                        th Name
+                                                                        th Web Url
+                                                                    if project.branch.length > 0
+                                                                        each p,i in project.branch
+                                                                                tr
+                                                                                    td #{p.bname}
+                                                                                    td(style="word-break:break-all;")
+                                                                                        a(href="#{p.web_url}" target="_blank") #{p.web_url}
+                                                                    else
+                                                                        tr
+                                                                            td(colspan="2" align="center") No Data
+                                    else
+                                        | No Project Exist Please &nbsp;
+                                        a(href="/newproject") Add Project
+                                table(id="error" class="table")

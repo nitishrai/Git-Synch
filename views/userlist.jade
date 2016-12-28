@@ -1,0 +1,87 @@
+html(lang="en")
+    head
+        title User Listing
+        include head.jade
+        script.
+            $( document ).ready(function(){
+
+                $(".typeahead").keyup(function(){
+                    $("#error").empty();
+                     $("#old tbody").find("tr").hide();
+                    var data = this.value.toLowerCase().split(" ");
+                    var jo = $("#old tbody").find("tr");
+                    $.each(data, function(i, v){
+                        jo = jo.filter("*:contains('"+v+"')");
+                        if(jo.length==0)
+                        {
+                            var content = '<table><tr><td style="font-size:14px;text-align:center;margin-left: 62px;width: 450px;">No Server Exist with this name <a href="/newserver"> Click To Add It </a></td></tr></table>'
+                            $("#error").append(content);
+                        }
+                    });
+                    jo.show();
+                });
+            });
+        style.
+            .bs-example{
+                margin: 150px 50px;
+            }
+            .popover-medium {
+                max-width: 350px;
+            }
+            .bs-example{
+                    font-family: sans-serif;
+                    position: relative;
+                    margin: 50px;
+            }
+            .typeahead, .tt-query, .tt-hint {
+                    border: 2px solid #CCCCCC;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    height: 30px;
+                    line-height: 30px;
+                    outline: medium none;
+                    vertical-align:none;
+                    margin-left:190px;
+                    padding: 8px 12px;
+                    width: 206px;
+            }
+            .panel-body {
+                    padding: 0px !important; 
+            }
+            #old tr td:first { width : 50%; }
+            #old tr td:nth-child(2) { width : 30%; }
+            #old tr td:nth-child(3) { width : 20%; text-align:center}
+            #error tr td:first { width : 80%; }
+    include body.jade
+        div(class="container" style="width:1048px")
+            div(class="col-md-6 col-md-offset-2")
+                div(class="row" style="padding: 40px;margin-right:-80px")
+                    div(class="panel panel-default" style="width:550px")
+                        div(class="panel-heading")
+                            h2(class="panel-title")
+                                strong User List
+                                input(type="text" name="typeahead" class="typeahead tt-query" autocomplete="off" spellcheck="false" placeholder="Search User" align="right" style="margin-left:200px;vertical-align: none;")
+                        div(class="panel-body")
+                            div
+                                table(id="old" class="table table-striped")
+                                    thead
+                                        tr
+                                            td Name
+                                            td Email
+                                            td Project
+                                    if data.length > 0
+                                        each serverdata, i in data
+                                            tr
+                                                td
+                                                    a(href="/serverview/#{serverdata.name}") #{serverdata.name}
+                                                td
+                                                    a(href="http://#{serverdata.email}" target="_blank") #{serverdata.email}
+                                                td
+                                                    a(href="/users/projectadd/#{serverdata.id}" target="_blank") 
+                                                         img(src="/images/console.jpg" style="width:22px;height:22px;")
+
+                                    else
+                                        | No Server Exist &nbsp;
+                                        <br>
+                                        a(href="/newserver") Click To Add Server
+                                table(id="error")

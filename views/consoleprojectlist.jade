@@ -1,0 +1,50 @@
+html(lang="en")
+    head
+        title User Details
+        include head.jade
+        script.
+            $(document).ready(function() {
+                $("#searchsubmit").on('click', function() {
+                    $.get("/gitapi/searchproject/" + $("#search").val(), function(data) {
+                        $.foreach(data,function(k,v){
+                            console.log(k);
+                        })
+                    });
+                })
+            });
+    include body.jade
+        div(class="container" style="width:1048px")
+            div(class="col-md-6 col-md-offset-1")
+                div(class="row" style="padding: 100px;margin-left:-120px")
+                    div(class="page-header" style="margin-top: -90px;")
+                       h1( id="header") User Alloted Project
+                    div(id="here_table" class="col-md-12")
+                        table(class="table table-hover" style="width:810px;float:none;font-size:100%;align:center" align="center")
+                            tr
+                                th Project
+                                th Branch
+                                th(style="text-align: center;") Action
+                            if(data.length > 0)
+                                each bData,i in data
+                                    tr
+                                        td #{bData.branchname}
+                                        td #{bData.friendlyservername}\                         
+                                        td(align="center")
+                                            a(href="/sendemail/#{bData.branch_id}")
+                                                img(src="/images/email.png")
+                            else
+                                tr
+                                    td(colspan="3" align="center") No Branch Data Found
+                            //- tr
+                            //-     td
+                            //-         a(href="/projectinfo/#{project_id}") Back to Details
+                            //-     td( style="text-align:center")
+                            //-         a(style="text-align: center;color: red;" href="/projectdelete/#{project_id}" onclick="return confirm(\'Are you sure you want to delete the project?\');") Delete Project
+                            //-     td
+                            //-         a(href="/branchadd/#{project_id}") Add Branch
+                div(class="row" style="padding: 100px;margin-left:-120px")
+                    div(class="page-header" style="margin-top: -90px;")
+                       h1( id="header") Project Search
+                            input.form-control(type='text', id="search" placeholder='Search')
+                            button.btn.btn-default(id="searchsubmit")
+                                span.glyphicon.glyphicon-search

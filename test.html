@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Untitled Document</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+</head>
+
+<body>
+    <input type="button" id="click" value="NEXT" />
+    <div id='yotpo-testimonials-custom-tab'>
+    </div>
+    <div id='yotpo-testimonials-custom-tabhidden' style="display:none">
+    </div>
+</body>
+<script type="text/javascript">
+    var pageIndex = 10;
+    $(document).ready(function () {
+
+        $("#click").click(function (e) {
+            e.preventDefault();
+            pageIndex = pageIndex + 10;
+            fireAjax();
+        });
+
+        function fireAjax()
+        {
+            $.ajax({
+                url: 'http://w2.yotpo.com/batch',
+                type: 'Post',
+                data: { "app_key": "ngSX4UknSMZi4sMJC8cvIaxwptYUTytlAvxYq9kS", "is_mobile": "false", "methods": '[{"method":"testimonials","params":{"page":1,"pid":"yotpo_site_reviews","include_site_reviews":true,"reference":"testimonials_widget_internal","hide_custom_fields":true,"per_page":"' + pageIndex + '"}}]', "widget_version": "2015-11-01_09-12-40" },
+                cache: false,
+                complete: function(data)
+                {
+                    data = data['responseText'];
+                    data = data.replace("[", "").replace("]", "");
+                    data = $.parseJSON(data);
+                    data = data.result;
+
+                    //console.log(data);
+
+                    if(pageIndex > 10)
+                    {
+                        $('*').off();
+                        document.getElementsByTagName("script")[0].remove();
+                    }
+
+                    var e = document.createElement("script");
+                    e.type = "text/javascript",  e.src = "http://staticw2.yotpo.com/ngSX4UknSMZi4sMJC8cvIaxwptYUTytlAvxYq9kS/widget.js?c=" + new Date().getTime() ;
+                    
+                    var t = document.getElementsByTagName("script")[0];
+
+                    $('#yotpo-testimonials-custom-tab').html(data);
+
+                    var c  = t.parentNode.insertBefore(e, t);
+
+                    // $(".yotpo-pager").remove();
+                }
+            });
+        }
+
+        fireAjax();
+    });
+</script>
+</html>

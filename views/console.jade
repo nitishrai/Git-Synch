@@ -1,0 +1,43 @@
+html
+  head
+    link(rel='stylesheet', href='/build/xterm.css')
+    link(rel='stylesheet', href='/build/addons/fullscreen/fullscreen.css')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/fetch/1.0.0/fetch.min.js')
+    script(src='/build/xterm.js')
+    script(src='/build/addons/attach/attach.js')
+    script(src='/build/addons/fit/fit.js')
+    script(src='/build/addons/fullscreen/fullscreen.js')
+  style.
+    body {
+    font-family: helvetica, sans-serif, arial;
+    font-size: 1em;
+    color: #111;
+    }
+    h1 {
+        text-align: center;
+    }
+
+    #terminal-container {
+        width: 960;
+        height: 500px;
+        margin: 0 auto;
+        padding: 2px;
+    }
+
+    #terminal-container .terminal {
+        background-color: #111;
+        color: #fafafa;
+        padding: 2px;
+    }
+
+    #terminal-container .terminal:focus .terminal-cursor {
+        background-color: #fafafa;
+    }
+  body
+    h1
+      | Server = #{servername}
+    #terminal-container
+    input(type="hidden",id="server" ,value="#{server}")
+    input(type="hidden",id="cols" ,value="96")
+    input(type="hidden",id="rows" ,value="26")
+    script(src="/build/main.js" defer)

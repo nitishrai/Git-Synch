@@ -1,0 +1,27 @@
+html(lang="en")
+head
+  title Project Info
+  include head.jade
+  style.
+    .list-group a {
+      width: 200px;
+    }
+include body.jade  
+          div(class="container" style="width:1048px")
+            div(class="col-md-6 col-md-offset-2")
+                div(class="row" style="padding: 40px;margin-right:-80px")
+                        div(class="panel panel-default")
+                              div(class="panel-heading")
+                                    h2(class="panel-title")
+                                      strong PROJECT DETAILS
+                              div(class="panel-body" align="center")
+                                  div(class="list-group" align="center")
+                                    a(href="/branchadd/#{project_id}" class="btn btn-lg btn-primary") Branch Add
+                                  div(class="list-group" align="center")
+                                    a(href="/branchdetails/#{project_id}" class="btn btn-lg btn-primary") Branch List
+                                  div(class="list-group" align="center")
+                                    a(href="/projectedit/#{project_id}" class="btn btn-lg btn-primary") Project Edit
+                                  div(class="list-group" align="center")
+                                    a(href="/projectEmail/#{project_id}" class="btn btn-lg btn-primary") Email Details
+                                  div(class="list-group" align="center")
+                                    a(href="/projectdelete/#{project_id}" class="btn btn-lg btn-danger" onclick="return confirm(\'Are you sure you want to delete the project?\');") Delete Project
