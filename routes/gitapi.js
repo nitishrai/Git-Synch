@@ -416,7 +416,7 @@ router.get('/console', function(req, res) {
 
 })
 
-router.get(/^\/searchproject\/(\w+([-]\w+))(?:\/(\w+))?$/, function(req, res) {
+router.get(/^\/searchproject\/([a-zA-Z0-9-]+)(?:\/(\w+))?$/, function(req, res) {
     var searchQueryProjectName = req.params[0];
     var getBranch = req.params[1];
     console.log(searchQueryProjectName);
@@ -435,21 +435,27 @@ router.get(/^\/searchproject\/(\w+([-]\w+))(?:\/(\w+))?$/, function(req, res) {
             return 0;
         }
         data.forEach(function(data) {
-        	var arr ;
+            var arr;
             projectCount++;
             if (getBranch == null) {
                 arr = {
                     'unique_identifier': data.unique_identifier,
                     '_id': data._id,
                     'project': true,
-                    'branchLength': data.branches.length,
+                    'branch': data.branches.length,
                 }
-            }else{
-            	data.branches.forEach(function(branch){
-            		console.log(branch);
-            	});
+                projectArray.data.push(arr);
+            } else {
+                data.branches.forEach(function(branch) {
+                    arr = {
+                        'branch': branch.branchname,
+                        '_id': branch.branch_id,
+                        'unique_identifier': data.unique_identifier
+                    }
+                    console.log(arr);
+                    projectArray.data.push(arr);
+                });
             }
-            projectArray.data.push(arr);
         });
         res.send(projectArray.data);
     });
