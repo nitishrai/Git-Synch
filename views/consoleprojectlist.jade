@@ -5,12 +5,24 @@ html(lang="en")
         script.
             $(document).ready(function() {
                 $("#searchsubmit").on('click', function() {
-                    $.get("/gitapi/searchproject/" + $("#search").val(), function(data) {
-                        $.foreach(data,function(k,v){
-                            console.log(k);
-                        })
-                    });
+                    searchProject($("#search").val());
                 })
+                $(document).on('click', '.clickable-row', function() {
+                    searchProject($(this).data('href'))
+                });
+
+                function searchProject(searchData) {
+                    //alert(searchData);
+                    $.get("/gitapi/searchproject/" + searchData, function(data) {
+                        var table = '<table class="table table-hover" style="width:810px;float:none;font-size:100%;align:center" align="center"><tr><th>Project</th><th>Branch</th><th>Add</th></tr>';
+                        $.each(data, function(k, v) {
+                            var click = (v.project) ? "clickable-row" : "";
+                            var getBranch = (v.project) ? "true" : "";
+                            table += '<tr class="' + click + '" data-href="' + v.unique_identifier + '/getBranch"><td>' + v.unique_identifier + '</td><td>' + v.branchLength + '</td><td><a href="#" onmouseover="event.preventDefault();">Add</a></td></tr>';
+                        })
+                        $("#here_table_search").html(table);
+                    });
+                }
             });
     include body.jade
         div(class="container" style="width:1048px")
@@ -48,3 +60,5 @@ html(lang="en")
                             input.form-control(type='text', id="search" placeholder='Search')
                             button.btn.btn-default(id="searchsubmit")
                                 span.glyphicon.glyphicon-search
+                    div(id="here_table_search" class="col-md-12")
+                       

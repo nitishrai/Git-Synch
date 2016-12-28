@@ -416,8 +416,10 @@ router.get('/console', function(req, res) {
 
 })
 
-router.get('/searchproject/:id', function(req, res) {
-    var searchQuery = req.params.id;
+router.get(/^\/searchproject\/(\w+([-]\w+))(?:\/(\w+))?$/, function(req, res) {
+    var searchQueryProjectName = req.params[0];
+    var getBranch = req.params[1];
+    console.log(searchQueryProjectName);
     var db = req.db;
     var project = db.get('project');
     var projectArray = {};
@@ -425,7 +427,7 @@ router.get('/searchproject/:id', function(req, res) {
     projectCount = 0;
     project.find({
         'unique_identifier': {
-            '$regex': searchQuery
+            '$regex': searchQueryProjectName
         }
     }, function(err, data) {
         if (err) {
@@ -433,12 +435,19 @@ router.get('/searchproject/:id', function(req, res) {
             return 0;
         }
         data.forEach(function(data) {
+        	var arr ;
             projectCount++;
-            arr = {
-                'unique_identifier': data.unique_identifier,
-                '_id': data._id,
-                'project': true,
-                'branch': data.branches.length
+            if (getBranch == null) {
+                arr = {
+                    'unique_identifier': data.unique_identifier,
+                    '_id': data._id,
+                    'project': true,
+                    'branchLength': data.branches.length,
+                }
+            }else{
+            	data.branches.forEach(function(branch){
+            		console.log(branch);
+            	});
             }
             projectArray.data.push(arr);
         });
